@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Comandos PySpark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+        .table-container {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        tr:nth-child(even) {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center md:text-left">
+            <h1 class="text-4xl font-extrabold text-slate-800 mb-2">Cheat Sheet PySpark</h1>
+            <p class="text-slate-600">Os 30 comandos e funções mais essenciais para engenharia e análise de dados.</p>
+        </header>
+
+        <!-- Search and Filters -->
+        <div class="mb-6 flex flex-col md:flex-row gap-4">
+            <input type="text" id="searchInput" placeholder="Buscar comando ou descrição..." 
+                class="flex-grow p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-slate-500">Filtrar por:</span>
+                <select id="categoryFilter" class="p-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                    <option value="all">Todas as Categorias</option>
+                    <option value="Configuração">Configuração</option>
+                    <option value="Visualização">Visualização</option>
+                    <option value="Transformação">Transformação</option>
+                    <option value="Filtro/Ordenação">Filtro/Ordenação</option>
+                    <option value="Agregação">Agregação</option>
+                    <option value="Join/Union">Join/Union</option>
+                    <option value="Limpeza/Saída">Limpeza/Saída</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Commands Table -->
+        <div class="table-container bg-white rounded-xl overflow-hidden overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-800 text-white">
+                    <tr>
+                        <th class="p-4 font-semibold uppercase text-xs tracking-wider">Comando</th>
+                        <th class="p-4 font-semibold uppercase text-xs tracking-wider">Categoria</th>
+                        <th class="p-4 font-semibold uppercase text-xs tracking-wider">Descrição</th>
+                        <th class="p-4 font-semibold uppercase text-xs tracking-wider">Exemplo de Código</th>
+                    </tr>
+                </thead>
+                <tbody id="commandsTableBody">
+                    <!-- Data will be populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="mt-8 text-center text-slate-400 text-sm">
+            <p>Dica: Use <code>from pyspark.sql import functions as F</code> para a maioria das transformações.</p>
+        </footer>
+    </div>
+
+    <script>
+        const commands = [
+            { cmd: "SparkSession.builder", cat: "Configuração", desc: "Cria a sessão principal do Spark.", code: "spark = SparkSession.builder.appName('App').getOrCreate()" },
+            { cmd: "read.csv()", cat: "Configuração", desc: "Lê arquivos CSV.", code: "df = spark.read.csv('file.csv', header=True)" },
+            { cmd: "read.parquet()", cat: "Configuração", desc: "Lê arquivos Parquet (mais rápido).", code: "df = spark.read.parquet('data.parquet')" },
+            { cmd: "read.json()", cat: "Configuração", desc: "Lê arquivos JSON.", code: "df = spark.read.json('data.json')" },
+            { cmd: "createDataFrame()", cat: "Configuração", desc: "Cria um DF a partir de dados locais.", code: "df = spark.createDataFrame(data, schema)" },
+            
+            { cmd: "show()", cat: "Visualização", desc: "Exibe as linhas do DataFrame.", code: "df.show(10, truncate=False)" },
+            { cmd: "printSchema()", cat: "Visualização", desc: "Mostra a estrutura das colunas.", code: "df.printSchema()" },
+            { cmd: "columns", cat: "Visualização", desc: "Lista o nome das colunas.", code: "print(df.columns)" },
+            { cmd: "describe()", cat: "Visualização", desc: "Estatísticas básicas.", code: "df.describe().show()" },
+            { cmd: "count()", cat: "Visualização", desc: "Conta o número total de linhas.", code: "total = df.count()" },
+            { cmd: "distinct()", cat: "Visualização", desc: "Retorna valores únicos.", code: "df.select('col').distinct().show()" },
+
+            { cmd: "select()", cat: "Transformação", desc: "Seleciona colunas específicas.", code: "df.select('nome', 'idade')" },
+            { cmd: "withColumn()", cat: "Transformação", desc: "Cria ou altera colunas.", code: "df.withColumn('nova', F.col('velha') * 2)" },
+            { cmd: "withColumnRenamed()", cat: "Transformação", desc: "Renomeia uma coluna.", code: "df.withColumnRenamed('old', 'new')" },
+            { cmd: "drop()", cat: "Transformação", desc: "Remove colunas.", code: "df.drop('coluna_inutil')" },
+            { cmd: "cast()", cat: "Transformação", desc: "Muda o tipo de dado.", code: "col('id').cast('integer')" },
+            { cmd: "alias()", cat: "Transformação", desc: "Dá apelido a colunas.", code: "F.avg('preco').alias('media_preco')" },
+
+            { cmd: "filter() / where()", cat: "Filtro/Ordenação", desc: "Filtra linhas por condição.", code: "df.filter(df.idade > 21)" },
+            { cmd: "orderBy() / sort()", cat: "Filtro/Ordenação", desc: "Ordena os dados.", code: "df.orderBy(F.col('data').desc())" },
+            { cmd: "limit()", cat: "Filtro/Ordenação", desc: "Limita o número de linhas.", code: "df_top = df.limit(5)" },
+
+            { cmd: "groupBy()", cat: "Agregação", desc: "Agrupa por colunas.", code: "df.groupBy('categoria')" },
+            { cmd: "agg()", cat: "Agregação", desc: "Executa múltiplas agregações.", code: "df.groupBy('cat').agg(F.sum('venda'))" },
+            { cmd: "sum(), avg(), max()", cat: "Agregação", desc: "Funções matemáticas básicas.", code: "F.max('data')" },
+            { cmd: "pivot()", cat: "Agregação", desc: "Transpõe linhas em colunas.", code: "df.groupBy('ano').pivot('mes').sum('valor')" },
+
+            { cmd: "join()", cat: "Join/Union", desc: "Une dois DataFrames.", code: "df1.join(df2, 'id', 'inner')" },
+            { cmd: "union()", cat: "Join/Union", desc: "Combina DFs verticalmente.", code: "df_total = df1.union(df2)" },
+
+            { cmd: "fillna()", cat: "Limpeza/Saída", desc: "Preenche valores nulos.", code: "df.fillna({'score': 0})" },
+            { cmd: "dropna()", cat: "Limpeza/Saída", desc: "Remove linhas com nulos.", code: "df.dropna(subset=['id'])" },
+            { cmd: "collect()", cat: "Limpeza/Saída", desc: "Traz dados para o Driver (local).", code: "data_list = df.collect()" },
+            { cmd: "write.save()", cat: "Limpeza/Saída", desc: "Salva os dados em disco.", code: "df.write.parquet('output_path')" }
+        ];
+
+        const tableBody = document.getElementById('commandsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+
+        function renderTable(filterText = '', filterCat = 'all') {
+            tableBody.innerHTML = '';
+            
+            const filtered = commands.filter(item => {
+                const matchesSearch = item.cmd.toLowerCase().includes(filterText.toLowerCase()) || 
+                                     item.desc.toLowerCase().includes(filterText.toLowerCase());
+                const matchesCat = filterCat === 'all' || item.cat === filterCat;
+                return matchesSearch && matchesCat;
+            });
+
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">Nenhum comando encontrado...</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-blue-50 transition-colors border-b border-slate-200";
+                row.innerHTML = `
+                    <td class="p-4 font-bold text-blue-700"><code>${item.cmd}</code></td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs font-semibold ${getCatColor(item.cat)}">
+                            ${item.cat}
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-700 text-sm">${item.desc}</td>
+                    <td class="p-4">
+                        <div class="relative group">
+                            <pre class="bg-slate-100 p-2 rounded text-xs text-slate-800 overflow-x-auto border border-slate-200"><code>${item.code}</code></pre>
+                            <button onclick="copyToClipboard('${item.code}')" class="absolute top-1 right-1 bg-white/80 hover:bg-white text-slate-500 p-1 rounded border shadow-sm text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Copiar</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function getCatColor(cat) {
+            const colors = {
+                'Configuração': 'bg-purple-100 text-purple-700',
+                'Visualização': 'bg-emerald-100 text-emerald-700',
+                'Transformação': 'bg-blue-100 text-blue-700',
+                'Filtro/Ordenação': 'bg-orange-100 text-orange-700',
+                'Agregação': 'bg-pink-100 text-pink-700',
+                'Join/Union': 'bg-indigo-100 text-indigo-700',
+                'Limpeza/Saída': 'bg-slate-200 text-slate-700'
+            };
+            return colors[cat] || 'bg-gray-100 text-gray-700';
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            // Simple visual feedback could go here
+        }
+
+        searchInput.addEventListener('input', () => renderTable(searchInput.value, categoryFilter.value));
+        categoryFilter.addEventListener('change', () => renderTable(searchInput.value, categoryFilter.value));
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>
