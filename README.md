@@ -5,3 +5,5 @@ Este guia contém os 30 comandos e funções mais essenciais para trabalhar com 
 [Clique aqui para acessar!](https://guilhermeonrails.github.io/pyspark-comands/)
 
 [Mais sobre Apache Parquet](https://guilhermeonrails.github.io/apache-parquet/)
+
+[Mais sobre Cálculo de Distância entre Ponto](https://guilhermeonrails.github.io/formulas-e-distancias-entre-2-pontos/)
